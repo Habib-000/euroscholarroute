@@ -1,9 +1,35 @@
-const Contact = () => {
+import { useState } from 'react';
 
-    const handleSubmit = (e) => {
+const Contact = () => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert('Thank you for your inquiry! We will contact you within 24 hours.');
-        e.target.reset();
+        const form = e.target;
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                setIsSuccess(true);
+                setTimeout(() => setIsSuccess(false), 5000);
+                form.reset();
+            } else {
+                alert('Oops! There was a problem submitting your form');
+            }
+        } catch (error) {
+            alert('Oops! There was a problem submitting your form');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -88,24 +114,33 @@ const Contact = () => {
                     </div>
                 </div>
 
-                <form className="contact-form" id="contactForm" onSubmit={handleSubmit}>
+                <form className="contact-form" id="contactForm" action="https://formsubmit.co/euroscholarroute@gmail.com" method="POST" onSubmit={handleSubmit}>
+                    {isSuccess && (
+                        <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10b981', color: '#10b981', padding: '15px', borderRadius: '12px', marginBottom: '20px', textAlign: 'center', fontWeight: '500' }}>
+                            ✅ Your message has been sent successfully. We will reply within 24 hours.
+                        </div>
+                    )}
+                    <input type="hidden" name="_subject" value="New submission from Euro Scholar Contact" />
+                    <input type="hidden" name="_captcha" value="false" />
                     <div className="form-group">
                         <label className="form-label">Full Name</label>
-                        <input type="text" className="form-input" placeholder="Enter your full name" required />
+                        <input type="text" name="name" className="form-input" placeholder="Enter your full name" required />
                     </div>
                     <div className="form-group">
                         <label className="form-label">Email Address</label>
-                        <input type="email" className="form-input" placeholder="Enter your email" required />
+                        <input type="email" name="email" className="form-input" placeholder="Enter your email" required />
                     </div>
                     <div className="form-group">
                         <label className="form-label">Subject</label>
-                        <input type="text" className="form-input" placeholder="How can we help you?" />
+                        <input type="text" name="_subject" className="form-input" placeholder="How can we help you?" />
                     </div>
                     <div className="form-group">
                         <label className="form-label">Message</label>
-                        <textarea className="form-input form-textarea" placeholder="Tell us about your goals..."></textarea>
+                        <textarea name="message" className="form-input form-textarea" placeholder="Tell us about your goals..." required></textarea>
                     </div>
-                    <button type="submit" className="submit-btn">Send Inquiry</button>
+                    <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Sending...' : 'Send Inquiry'}
+                    </button>
                 </form>
             </div>
         </section>
