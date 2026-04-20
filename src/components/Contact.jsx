@@ -97,7 +97,7 @@ const Contact = () => {
                         </div>
                         <div>
                             <div className="contact-label">Email</div>
-                            <div className="contact-value">info@euroscholarroute.com</div>
+                            <div className="contact-value">euroscholarroute@gmail.com</div>
                         </div>
                     </a>
                     <div className="contact-item appear-element">
